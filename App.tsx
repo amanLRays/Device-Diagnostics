@@ -1,37 +1,67 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
+import { useEffect, useState } from 'react';
 import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+  ActivityIndicator,
+  NativeEventEmitter,
+  NativeModules,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import BatteryCard from './src/components/BatteryCard';
+import DeviceInfoCard from './src/components/DeviceInfoCard';
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+const { BatteryModule } = NativeModules;
 
-  return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
-  );
-}
+type BatteryInfo = {
+  percentage: number;
+  isCharging: boolean;
+  temperature: number;
+};
 
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
+export default function App() {
+  const [battery, setBattery] = useState<BatteryInfo | null>(null);
+
+  useEffect(() => {
+    const emitter = new NativeEventEmitter(BatteryModule);
+
+    const sub = emitter.addListener(
+      'BatteryInfoChanged',
+      (data: BatteryInfo) => {
+        setBattery(data);
+      }
+    );
+
+    BatteryModule.startListening();
+
+    return () => {
+      sub.remove();
+      BatteryModule.stopListening();
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
+      <StatusBar barStyle="light-content" backgroundColor="#121212" hidden={true} />
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Device Report</Text>
+      </View>
+
+      <View style={styles.content}>
+        {battery ? (
+          <BatteryCard
+            level={battery.percentage}
+            isCharging={battery.isCharging}
+            temperature={battery.temperature}
+          />
+        ) : (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#4CAF50" />
+          </View>
+        )}
+
+        <DeviceInfoCard />
+      </View>
     </View>
   );
 }
@@ -39,7 +69,31 @@ function AppContent() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#121212',
+  },
+  header: {
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#333',
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFF',
+  },
+  content: {
+    flex: 1,
+    padding: 20,
+    justifyContent: 'center',
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#888',
+    fontSize: 16,
   },
 });
-
-export default App;
