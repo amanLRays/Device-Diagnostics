@@ -24,6 +24,7 @@ class BatteryModule(
         val scale = intent?.getIntExtra(BatteryManager.EXTRA_SCALE, -1) ?: -1
         val status = intent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
         val temperature = intent?.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1) ?: -1
+        val voltage = intent?.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1) ?: -1
 
         if (level >= 0 && scale > 0) {
           val batteryPct = (level * 100) / scale
@@ -37,6 +38,7 @@ class BatteryModule(
           data.putInt("percentage", batteryPct)
           data.putBoolean("isCharging", isCharging)
           data.putDouble("temperature", temperature / 10.0) // Android gives temp * 10
+          data.putDouble("voltage", voltage / 1000.0) // Android gives voltage in mV, convert to V
 
           sendEvent("BatteryInfoChanged", data)
         }

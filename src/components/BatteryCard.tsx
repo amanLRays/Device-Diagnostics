@@ -6,9 +6,10 @@ type Props = {
     level: number | null;
     isCharging: boolean;
     temperature: number;
+    voltage: number;
 };
 
-export default function BatteryCard({ level, isCharging, temperature }: Props) {
+export default function BatteryCard({ level, isCharging, temperature, voltage }: Props) {
     const getBatteryColor = () => {
         if (level === null) return '#757575'; // Grey for unknown
         if (level <= 20) return '#FF5252'; // Red
@@ -58,7 +59,7 @@ export default function BatteryCard({ level, isCharging, temperature }: Props) {
                 </View>
                 <View style={styles.detailItem}>
                     <Text style={styles.detailLabel}>Voltage</Text>
-                    <Text style={styles.detailValue}>-- V</Text>
+                    <Text style={styles.detailValue}>{voltage.toFixed(2)} V</Text>
                 </View>
             </View>
         </View>

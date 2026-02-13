@@ -8,6 +8,8 @@ import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.devicereport.battery.BatteryPackage
 import com.devicereport.device.DevicePackage
+import com.devicereport.performance.PerformancePackage
+import com.devicereport.display.DisplayPackage
 
 class MainApplication : Application(), ReactApplication {
 
@@ -20,6 +22,8 @@ class MainApplication : Application(), ReactApplication {
           // add(MyReactNativePackage())
           add(BatteryPackage())
           add(DevicePackage())
+          add(PerformancePackage())
+          add(DisplayPackage())
         },
     )
   }

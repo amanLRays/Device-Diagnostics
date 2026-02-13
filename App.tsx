@@ -7,9 +7,12 @@ import {
   StyleSheet,
   Text,
   View,
+  ScrollView,
 } from 'react-native';
 import BatteryCard from './src/components/BatteryCard';
 import DeviceInfoCard from './src/components/DeviceInfoCard';
+import PerformanceCard from './src/components/PerformanceCard';
+import DisplayCard from './src/components/DisplayCard';
 
 const { BatteryModule } = NativeModules;
 
@@ -17,6 +20,7 @@ type BatteryInfo = {
   percentage: number;
   isCharging: boolean;
   temperature: number;
+  voltage: number;
 };
 
 export default function App() {
@@ -47,12 +51,13 @@ export default function App() {
         <Text style={styles.headerTitle}>Device Report</Text>
       </View>
 
-      <View style={styles.content}>
+      <ScrollView contentContainerStyle={styles.content}>
         {battery ? (
           <BatteryCard
             level={battery.percentage}
             isCharging={battery.isCharging}
             temperature={battery.temperature}
+            voltage={battery.voltage}
           />
         ) : (
           <View style={styles.loadingContainer}>
@@ -60,8 +65,12 @@ export default function App() {
           </View>
         )}
 
+        <PerformanceCard />
+
+        <DisplayCard />
+
         <DeviceInfoCard />
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -83,9 +92,8 @@ const styles = StyleSheet.create({
     color: '#FFF',
   },
   content: {
-    flex: 1,
     padding: 20,
-    justifyContent: 'center',
+    paddingBottom: 40,
   },
   loadingContainer: {
     alignItems: 'center',
